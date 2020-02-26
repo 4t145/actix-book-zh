@@ -23,9 +23,9 @@ contains the following:
 actix = "0.8"
 ```
 
-Let's create an actor that will accept a `Ping` message and respond with the number of pings processed.
+创建一个接受 `Ping` message 并回复处理后的ping值的actor.
 
-An actor is a type that implements the `Actor` trait:
+一个actor就是是实现了 `Actor` trait的类型:
 
 ```rust
 # extern crate actix;
@@ -42,11 +42,9 @@ impl Actor for MyActor {
 # fn main() {}
 ```
 
-Each actor has an execution context, for `MyActor` we are going to use `Context<A>`. More information
-on actor contexts is available in the next section.
+每个actor都有一个execution context, 我们将在`MyActor`上使用 `Context<A>`. 下一节我们讲更多关于actor contexts的信息.
 
-Now we need to define the `Message` that the actor needs to accept. The message can be any type
-that implements the `Message` trait.
+现在我们要定义actor要接收的 `Message` . message 可以是任何实现了 `Message` trait的类型.
 
 ```rust
 # extern crate actix;
@@ -55,18 +53,17 @@ use actix::prelude::*;
 struct Ping(usize);
 
 impl Message for Ping {
+    // Message 的结果将是一个 usize 值
     type Result = usize;
 }
 
 # fn main() {}
 ```
 
-The main purpose of the `Message` trait is to define a result type. The `Ping` message defines
-`usize`, which indicates that any actor that can accept a `Ping` message needs to
-return `usize` value.
+ `Message` trait 的主要目的就是定义 result 类型. `Ping` 消息(message) 的 result 定义为
+`usize`, 这样就暗示着任何一个接受 `Ping` 消息的 actor 都需要返回一个 `usize` 值.
 
-And finally, we need to declare that our actor `MyActor` can accept `Ping` and handle it.
-To do this, the actor needs to implement the `Handler<Ping>` trait.
+最后, 我们要给我们我们的actor `MyActor` 实现 `Handler<Ping>` trait ,使其可以接收 `Ping` 并且处理(handle)它.
 
 ```rust
 # extern crate actix;
@@ -98,18 +95,19 @@ impl Handler<Ping> for MyActor {
 # fn main() {}
 ```
 
-That's it. Now we just need to start our actor and send a message to it.
-The start procedure depends on the actor's context implementation. In our case can we use
-`Context<A>` which is tokio/future based. We can start it with `Actor::start()`
-or `Actor::create()`. The first is used when the actor instance can be created immediately.
-The second method is used in case we need access to the context object before we can create
-the actor instance. In case of the `MyActor` actor we can use `start()`.
+就是如此!
+现在我们只需要启动(start)我们的actor再给它发送一条消息.
 
-All communication with actors goes through an address. You can `do_send` a message
-without waiting for a response, or `send` to an actor with a specific message.
-Both `start()` and `create()` return an address object.
+事实上, actor 的环境(context)实现决定了它的启动流程. 在这个例子中, 我们使用基于 tokio/future 的`Context<A>` . 我们可以通过 `Actor::start()`
+或者 `Actor::create()` 来启动. 其中, `Actor::start()` 用于 actor 实例可以即刻创建的情形. 而 `Actor::start()` 用于在创建实例之前, 我们要访问 context 对象的情形.
 
-In the following example we are going to create a `MyActor` actor and send one message.
+在 `MyActor` 的例子中, 我们就使用 `start()`来启动.
+
+所有 actors 之间的通讯都通过地址(address)来传递. 你可以使用 `send`给 actor 发送某条消息 , 当你不需要等待响应(response)的时候, 你可以 `do_send`.
+
+`start()` 和 `create()` 都会返回一个地址对象
+
+下面我们将new一个 `MyActor` actor , 再发送一条消息.
 
 ```rust
 # extern crate actix;
@@ -141,10 +139,10 @@ In the following example we are going to create a `MyActor` actor and send one m
 fn main() -> std::io::Result<()> {
     let system = System::new("test");
 
-    // start new actor
+    // 启动一个actor
     let addr = MyActor{count: 10}.start();
 
-    // send message and get future for result
+    // 发送消息, 得到一个future作为结果
     let res = addr.send(Ping(10));
 
     Arbiter::spawn(
@@ -158,4 +156,4 @@ fn main() -> std::io::Result<()> {
 }
 ```
 
-The Ping example is available in the [examples directory](https://github.com/actix/actix/tree/master/examples/).
+Ping这个例子可在此[示例目录](https://github.com/actix/actix/tree/master/examples/)查看.

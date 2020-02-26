@@ -1,14 +1,11 @@
 # Address
 
-Actors communicate exclusively by exchanging messages. The sending actor can optionally
-wait for the response. Actors cannot be referenced directly, only by their addresses.
+Actors 通过交换信息来独立交流. 发送方可以选择性等待回复. Actors 不能被直接引用, 而是通过地址(address)的方式相联系.
 
-There are several ways to get the address of an actor. The `Actor` trait provides
-two helper methods for starting an actor. Both return the address of the started actor.
+有几种方式可以得到Actor的地址, `Actor` 提供了两种快捷方式来启动一个actor. 它们都返回actor的地址.
 
-Here is an example of `Actor::start()` method usage. In this example `MyActor` actor
-is asynchronous and is started in the same thread as the caller - threads are covered in
-the [SyncArbiter] chapter.
+下面展示一个 `Actor::start()` 方法的使用例. 此例中 `MyActor` actor
+是异步的, 并在同一个调用线程中启动, 这个我们会在[SyncArbiter]这一节提到. 
 
 ```rust
 # extern crate actix;
