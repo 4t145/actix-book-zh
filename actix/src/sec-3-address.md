@@ -1,11 +1,11 @@
 # Address
 
-Actors 通过交换信息来独立交流. 发送方可以选择性等待回复. Actors 不能被直接引用, 而是通过地址(address)的方式相联系.
+「actor」通过交换「message」来独立交流。发送方可以选择是否等待回复。「actor」不能被直接引用，只能通过地址「address」的方式相联系。
 
-有几种方式可以得到Actor的地址, `Actor` 提供了两种快捷方式来启动一个actor. 它们都返回actor的地址.
+有几种方式可以得到「actor」的「address」，`Actor` 提供了两种快捷方式来启动一个「actor」。它们都返回actor的地址。
 
-下面展示一个 `Actor::start()` 方法的使用例. 此例中 `MyActor` actor
-是异步的, 并在同一个调用线程中启动, 这个我们会在[SyncArbiter]这一节提到. 
+下面是一个 `Actor::start()` 使用例。此例中 `MyActor` 「actor」
+是异步的，并在同一个调用线程中启动，这个我们会在[SyncArbiter]这一节提到。
 
 ```rust
 # extern crate actix;
@@ -21,8 +21,7 @@ let addr = MyActor.start();
 # }
 ```
 
-An async actor can get its address from the `Context` struct. The context needs to
-implement the `AsyncContext` trait. `AsyncContext::address()` provides the actor's address.
+异步的「actor」可以从它的`Context` 结构获得「address」。这个「context」需要实现了`AsyncContext` trait. `AsyncContext::address()` 提供了「actor」的地址
 
 ```rust
 # extern crate actix;
@@ -40,44 +39,39 @@ impl Actor for MyActor {
 
 [SyncArbiter]: ./sec-6-sync-arbiter.md
 
-## Message
+## 消息（Message）
 
-To be able to handle a specific message the actor has to provide a
-[`Handler<M>`] implementation for this message.
-All messages are statically typed. The message can be handled in an asynchronous
-fashion. The actor can spawn other actors or add futures or
-streams to the execution context. The actor trait provides several methods that allow
- controlling the actor's lifecycle.
+为了能够处理特定的消息，「actor」提供了
+[`Handler<M>`] impl，所有的「message」都被静态地标定了类型，并且可以以异步的方式处理。
 
-To send a message to an actor, the `Addr` object needs to be used. `Addr` provides several
-ways to send a message.
+「actor」可以派生其他的「actor」，或给「context」添加 streams 和 future.
 
-  * `Addr::do_send(M)` - this method ignores any errors in message sending. If the mailbox
-  is full the message is still queued, bypassing the limit. If the actor's mailbox is closed,
-  the message is silently dropped. This method does not return the result, so if the
-  mailbox is closed and a failure occurs, you won't have an indication of this.
+`Actor` trait 提供了一些方法来控制其生命周期.
 
-  * `Addr::try_send(M)` - this method tries to send the message immediately. If
-  the mailbox is full or closed (actor is dead), this method returns a
-  [`SendError`].
+为了给「actor」发送消息，就需要使用`Addr`对象。 `Addr`提供了几种方法来发送「message」：
 
-  * `Addr::send(M)` - This message returns a future object that resolves to a result
-  of a message handling process. If the returned `Future` object is dropped, the
-  message is cancelled.
+  * `Addr::do_send(M)` - 这个方法忽视发送消息「message」过程中，可能发生的任何错误：如果邮箱（mailbox）已经满了，「message」就会越界添加到队列中；如果「actor」的邮箱已经关闭，「message」就会被静默删除。这个方法并不会返回任何结果，所以，如果邮箱已经关闭，然后发生错误，你也不会得到任何提示。
+
+  * `Addr::try_send(M)` - 这个方法会试着直接立刻马上发送「message」，如果邮箱满了或者关闭了（那个「actor」已经消失），这个方法会返回一个
+  [`SendError`]。
+
+  * `Addr::send(M)` - 这个方法会返回一个`Future`对象，其中会包含处理结果。如果返回的 `Future` 对象被删除，那么这个「message」也会被取消掉。
 
 [`Handler<M>`]: https://actix.rs/actix/actix/trait.Handler.html
 [`SendError`]: https://actix.rs/actix/actix/prelude/enum.SendError.html
 
-## Recipient
+## 受体（Recipient）
+
+受体（Recipient）是一种特化的「address」，它只支持一种特定类型的消息。在要把消息「message」发给不同类型的「actor」的时候，可以使用。
+
+一个「recipient」可以通过调用「address」的 `Addr::recipient()` 创建。
+
 
 Recipient is a specialized version of an address that supports only one type of message.
 It can be used in case the message needs to be sent to a different type of actor.
 A recipient object can be created from an address with `Addr::recipient()`.
 
-For example recipient can be used for a subscription system. In the following example
-`ProcessSignals` actor sends a `Signal` message to all subscribers. A subscriber can
-be any actor that implements the `Handler<Signal>` trait.
-
+举个例子，「recipient」可以用在订阅系统中，在下例中，`ProcessSignals`「actor」发送了 `Signal`「message」给所有的订阅者，只要这些订阅者「actor」实现了`Handler<Signal>` trait，就可以接受它
 ```rust
 # // This example is incomplete, so I don't think people can follow it and get value from what it's
 # // trying to communicate or teach.

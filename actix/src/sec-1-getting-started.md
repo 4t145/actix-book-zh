@@ -1,31 +1,26 @@
-# Getting Started
+# 开始
 
-Let’s create and run our first actix application. We’ll create a new Cargo project
-that depends on actix and then run the application.
-
-In previous section we already installed required rust version. Now let's create new cargo projects.
+让我们试着创建并运行自己的第一个actix应用吧！我们将创建并运行一个依赖于actix的cargo项目！
 
 ## Ping actor
 
-Let’s write our first actix application! Start by creating a new binary-based
-Cargo project and changing into the new directory:
+现在就来写第一个actix应用，我们用cargo新建一个二进制项目，并切换到这个文件夹。
 
 ```bash
 cargo new actor-ping --bin
 cd actor-ping
 ```
 
-Now, add actix as a dependency of your project by ensuring your Cargo.toml
-contains the following:
+现在在cargo.toml里面添加依赖项
 
 ```toml
 [dependencies]
 actix = "0.8"
 ```
 
-创建一个接受 `Ping` message 并回复处理后的ping值的actor.
+创建一个接受 `Ping` 「message」 并回复处理后的ping值的「actor」。
 
-一个actor就是是实现了 `Actor` trait的类型:
+所谓「actor」就是是实现了 `Actor` trait的类型：
 
 ```rust
 # extern crate actix;
@@ -42,9 +37,9 @@ impl Actor for MyActor {
 # fn main() {}
 ```
 
-每个actor都有一个execution context, 我们将在`MyActor`上使用 `Context<A>`. 下一节我们讲更多关于actor contexts的信息.
+每个「actor」都有一个「execution context」（执行环境），我们将在`MyActor`上使用 `Context<A>`。下一节我们讲更多关于「contexts」的信息。
 
-现在我们要定义actor要接收的 `Message` . message 可以是任何实现了 `Message` trait的类型.
+现在我们要定义「actor」要接收的 `Message` 。「message」 可以是任何实现了 `Message` trait的类型。
 
 ```rust
 # extern crate actix;
@@ -60,10 +55,12 @@ impl Message for Ping {
 # fn main() {}
 ```
 
- `Message` trait 的主要目的就是定义 result 类型. `Ping` 消息(message) 的 result 定义为
-`usize`, 这样就暗示着任何一个接受 `Ping` 消息的 actor 都需要返回一个 `usize` 值.
+实现`Message` trait 的主要目的就是去定义它的`type Result`。
 
-最后, 我们要给我们我们的actor `MyActor` 实现 `Handler<Ping>` trait ,使其可以接收 `Ping` 并且处理(handle)它.
+`Ping` 「message」 的`type Result`定义为
+`usize`，这样就意味着：任何一个接受 `Ping` 「message」的 「actor」 都需要返还一个 `usize` 值。
+
+最后，再要给我们的「actor」 `MyActor` 实现 `Handler<Ping>` trait ,使其可以接收 `Ping` 并且处理（handle）它。
 
 ```rust
 # extern crate actix;
@@ -95,19 +92,22 @@ impl Handler<Ping> for MyActor {
 # fn main() {}
 ```
 
-就是如此!
-现在我们只需要启动(start)我们的actor再给它发送一条消息.
+就是这样!
 
-事实上, actor 的环境(context)实现决定了它的启动流程. 在这个例子中, 我们使用基于 tokio/future 的`Context<A>` . 我们可以通过 `Actor::start()`
-或者 `Actor::create()` 来启动. 其中, `Actor::start()` 用于 actor 实例可以即刻创建的情形. 而 `Actor::start()` 用于在创建实例之前, 我们要访问 context 对象的情形.
+现在我们只需要启动（start）我们的「actor」，再给它发送一条消息。
 
-在 `MyActor` 的例子中, 我们就使用 `start()`来启动.
+事实上，「actor」中「context」的具体实现决定了它的启动流程。在这个例子中，我们使用基于 tokio/future 的`Context<A>` 。
 
-所有 actors 之间的通讯都通过地址(address)来传递. 你可以使用 `send`给 actor 发送某条消息 , 当你不需要等待响应(response)的时候, 你可以 `do_send`.
+我们可以通过调用`Actor::start()`
+或者`Actor::create()`来启动「actor」。其中,，`Actor::start()` 用于「actor」实例可以即刻创建的情景。而 `Actor::create()` 用于在创建实例之前，我们要访问「context」对象的情景。
 
-`start()` 和 `create()` 都会返回一个地址对象
+在 `MyActor` 的例子中， 我们将使用 `start()`来启动。
 
-下面我们将new一个 `MyActor` actor , 再发送一条消息.
+所有「actor」之间的通讯都通过地址「address」来传递。你可以使用 `send()`给「actor」发送消息，有时候你不需要等待响应（response）的时候，你可以 `do_send()`。
+
+`start()` 和 `create()` 都会返回一个「address」对象
+
+下面我们将new一个 `MyActor`「actor」, 再发送一条消息「message」.
 
 ```rust
 # extern crate actix;
@@ -156,4 +156,4 @@ fn main() -> std::io::Result<()> {
 }
 ```
 
-Ping这个例子可在此[示例目录](https://github.com/actix/actix/tree/master/examples/)查看.
+Ping这个例子可在此[示例目录](https://github.com/actix/actix/tree/master/examples/)查看。
